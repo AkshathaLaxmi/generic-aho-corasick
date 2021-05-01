@@ -30,9 +30,8 @@ int getFallback(vector<Node> &trie, int currentNode);
 vector<Node> buildTrie(vector<string> patterns)
 {
     vector<Node> result(1);
-    Node root = Node();
-    int indexToInsert = 1;
-    result.emplace_back(root);
+    // Node root = Node();
+    // result.emplace_back(root);
 
     for (string pattern : patterns)
     {
@@ -42,9 +41,9 @@ vector<Node> buildTrie(vector<string> patterns)
             int index = ch - 'a';
             if (result[currentNode].next[index] == -1)
             {
-                Node newNode = Node(ch, currentNode);
-                result[currentNode].next[index] = indexToInsert++;
-                result.emplace_back(newNode);
+                // Node newNode = Node(ch, currentNode);
+                result[currentNode].next[index] = result.size();
+                result.emplace_back(ch, currentNode);
             }
             currentNode = result[currentNode].next[index];
         }
