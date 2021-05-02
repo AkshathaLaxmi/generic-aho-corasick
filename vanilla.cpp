@@ -95,10 +95,9 @@ void matchPattern(vector<Node> trie, string text)
     for (char ch : text)
     {
         currentNode = getTransition(trie, currentNode, ch);
-        cout << currentNode << endl;
         if (trie[currentNode].isLeaf)
         {
-            // cout << currentNode << endl;
+            cout << currentNode << endl;
         }
     }
 }
