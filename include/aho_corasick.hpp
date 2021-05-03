@@ -4,6 +4,7 @@
 #include "aho_corasick_node.hpp"
 #include <iostream>
 #include <vector>
+#include <map>
 
 template <typename T, typename V>
 class AhoCorasick
@@ -16,7 +17,7 @@ class AhoCorasick
     int getTransition(int currentNode, V value);
 
 public:
-    void MatchPattern(T sequence);
+    map<typename T::iterator, vector<T>> MatchPattern(T &sequence);
     AhoCorasick(vector<T> patterns);
 };
 
@@ -26,8 +27,10 @@ void AhoCorasick<T, V>::BuildTrie()
     Node<V> root = Node<V>();
     this->trie.push_back(root);
 
-    for (T pattern : this->patterns)
+    int patternSize = this->patterns.size();
+    for (int patternIndex = 0; patternIndex < patternSize; ++patternIndex)
     {
+        T pattern = this->patterns[patternIndex];
         int currentNode = 0;
         for (V value : pattern)
         {
@@ -38,7 +41,7 @@ void AhoCorasick<T, V>::BuildTrie()
             }
             currentNode = this->trie[currentNode].next[value];
         }
-        this->trie[currentNode].isPattern = true;
+        this->trie[currentNode].patternIndex = patternIndex;
     }
 }
 
@@ -81,17 +84,41 @@ int AhoCorasick<T, V>::getTransition(int currentNode, V value)
 }
 
 template <typename T, typename V>
-void AhoCorasick<T, V>::MatchPattern(T sequence)
+map<typename T::iterator, vector<T>> AhoCorasick<T, V>::MatchPattern(T &sequence)
 {
+    map<typename T::iterator, vector<T>> result;
+
     int currentNode = 0;
-    for (V value : sequence)
+    typename T::iterator sequenceBegin = sequence.begin();
+    typename T::iterator sequenceEnd = sequence.end();
+
+    vector<typename T::iterator> iterators;
+    for (typename T::iterator it = sequenceBegin; it != sequenceEnd; ++it)
     {
+        iterators.push_back(it);
+    }
+
+    int iteratorsLength = iterators.size();
+
+    for (int iteratorIndex = 0; iteratorIndex < iteratorsLength; ++iteratorIndex)
+    {
+        typename T::iterator it = iterators[iteratorIndex];
+        V value = *it;
         currentNode = this->getTransition(currentNode, value);
-        if (this->trie[currentNode].isPattern)
+        if (this->trie[currentNode].patternIndex != -1)
         {
-            std::cout << "Pattern Matched: " << currentNode << std::endl;
+            int patternIndex = this->trie[currentNode].patternIndex;
+            int matchedPatternSize = this->patterns[patternIndex].size();
+            typename T::iterator patternStart = iterators[iteratorIndex - matchedPatternSize + 1];
+            if (result.find(patternStart) == result.end())
+            {
+                vector<T> temp;
+                result[patternStart] = temp;
+            }
+            result[patternStart].push_back(this->patterns[patternIndex]);
         }
     }
+    return result;
 }
 
 template <typename T, typename V>
