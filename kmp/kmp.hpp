@@ -1,5 +1,9 @@
+#ifndef _KMP_H_
+#define _KMP_H_
+
 #include <iostream>
-#include <bits/stdc++.h>
+#include <vector>
+#include <map>
 
 using namespace std;
 
@@ -7,113 +11,131 @@ using namespace std;
 // Step - 1: Preprocess the pattern. Make an array that stores the size of the longest prefix which
 //           is also a suffix for pattern[0:i]
 // Step - 2: Searching
-//           Start comparison of pat[j] with j = 0 with characters of current window of text
-//           Keep matching characters txt[i] and pat[j] and keep incrementing i and j while pat[j] and text[i] keep matching
+//           Start comparison of pat[j] with j = 0 with characters of current window of sequence
+//           Keep matching characters txt[i] and pat[j] and keep incrementing i and j while pat[j] and sequence[i] keep matching
 //           When mismatch occurs -
-//               It is known that characters pat[0:j-1] match with text[i-j:i-1]
+//               It is known that characters pat[0:j-1] match with sequence[i-j:i-1]
 //               preprocess[j-1] will tell us how many positions we can skip to start searching in the new window
 
-template <typename T>
+template <typename T, typename V>
 class KMP
 {
     vector<T> patterns;
-    T text;
+    map<typename T::iterator, vector<T>> result;
+    vector<typename T::iterator> iterators;
 
-    void preprocessor(T pattern, int pat_len, int *preprocess)
+    void preprocessor(T pattern, int pat_len, int* preprocess);
+    void search(T pattern);
+    void kmpSearch(T &sequence);
+
+    public:
+        KMP(vector<T> patterns);
+        map<typename T::iterator, vector<T>> MatchPattern(T &sequence);
+};
+
+template<typename T, typename V>
+void KMP<T, V>::preprocessor(T pattern, int pat_len, int *preprocess)
+{
+    int longest_pref_len = 0;
+
+    preprocess[0] = 0;
+
+    for (int i = 1; i < pat_len;)
     {
-        int longest_pref_len = 0;
-
-        preprocess[0] = 0;
-
-        for (int i = 1; i < pat_len;)
+        if (pattern[i] == pattern[longest_pref_len])
         {
-            if (pattern[i] == pattern[longest_pref_len])
+            preprocess[i] = ++longest_pref_len;
+            ++i;
+        }
+        else
+        {
+            if (longest_pref_len != 0)
             {
-                preprocess[i] = ++longest_pref_len;
-                ++i;
+                longest_pref_len = preprocess[longest_pref_len - 1];
             }
             else
             {
-                if (longest_pref_len != 0)
-                {
-                    longest_pref_len = preprocess[longest_pref_len - 1];
-                }
-                else
-                {
-                    preprocess[i] = 0;
-                    ++i;
-                }
-            }
-        }
-    }
-
-    void search(T pattern)
-    {
-        int pat_len = pattern.size();
-        int text_len = this->text.size();
-
-        int preprocess[pat_len];
-
-        preprocessor(pattern, pat_len, preprocess);
-
-        int j = 0;
-        for (int i = 0; i < text_len;)
-        {
-            if (pattern[j] == this->text[i])
-            {
-                ++j;
+                preprocess[i] = 0;
                 ++i;
             }
+        }
+    }
+}
 
-            if (j == pat_len)
+template<typename T, typename V>
+void KMP<T, V>::search(T pattern)
+{
+    int pat_len = pattern.size();
+    int iterator_size = this->iterators.size();
+
+    int preprocess[pat_len];
+
+    preprocessor(pattern, pat_len, preprocess);
+
+    int j = 0;
+    for (int iteratorIndex = 0; iteratorIndex < iterator_size;) {
+        
+        typename T::iterator it = this->iterators[iteratorIndex];
+        V value = *it;
+        
+        if (pattern[j] == value) {
+            ++j;
+            ++iteratorIndex;
+            if (iteratorIndex < iterator_size) {
+                it = this->iterators[iteratorIndex];
+                value = *it;
+            }
+        }
+
+
+        if (j == pat_len) {
+            typename T::iterator patternStart = this->iterators[iteratorIndex - pat_len + 1];
+            if (this->result.find(patternStart) == this->result.end()) {
+                vector<T> temp;
+                this->result[patternStart] = temp;
+            }
+            this->result[patternStart].push_back(pattern);
+            j = preprocess[j - 1];
+        }
+
+        else if (iteratorIndex < iterator_size && pattern[j] != value) {
+            if (j != 0)
             {
-                // cout << i << '\n';
                 j = preprocess[j - 1];
             }
-
-            else if (i < text_len && pattern[j] != this->text[i])
+            else
             {
-                if (j != 0)
-                {
-                    j = preprocess[j - 1];
-                }
-                else
-                {
-                    ++i;
-                }
+                ++iteratorIndex;
             }
         }
     }
+}
 
-    void kmpSearch()
-    {
-        for (T pattern : this->patterns)
-        {
-            this->search(pattern);
-        }
+template<typename T, typename V>
+void KMP<T, V>::kmpSearch(T &sequence)
+{
+    typename T::iterator sequenceBegin = sequence.begin();
+    typename T::iterator sequenceEnd = sequence.end();
+    for (typename T::iterator it = sequenceBegin; it != sequenceEnd; ++it) {
+        this->iterators.push_back(it);
     }
-
-public:
-    KMP(vector<T> patterns)
+    for (T pattern : this->patterns)
     {
-        this->patterns = patterns;
+        this->search(pattern);
     }
+}
 
-    void MatchPattern(T text)
-    {
-        this->text = text;
-        this->kmpSearch();
-    }
-};
+template<typename T, typename V>
+KMP<T, V>::KMP(vector<T> patterns)
+{
+    this->patterns = patterns;
+}
 
-// int main()
-// {
-//     // string text = "gcatcg";
-//     // vector<string> patterns = {"acc", "atc", "cat", "gcg"};
+template<typename T, typename V>
+map<typename T::iterator, vector<T>> KMP<T, V>::MatchPattern(T &sequence)
+{
+    this->kmpSearch(sequence);
+    return this->result;
+}
 
-//     vector<vector<int>> text = {{2, 3, 4}, {5, 7, 3}, {4, 5, 2}, {100, 44, 56}, {5, 7, 3}, {2, 3, 4}};
-//     vector<vector<vector<int>>> patterns = {{{4, 5, 2}, {5, 7, 3}, {5, 7, 3}}, {{4, 5, 2}, {100, 44, 56}, {5, 7, 3}}, {{5, 7, 3}, {4, 5, 2}, {100, 44, 56}}, {{2, 3, 4}, {5, 7, 3}, {2, 3, 4}}};
-//     KMP<vector<vector<int>>> search = KMP<vector<vector<int>>>(patterns);
-//     search.MatchPattern(text);
-//     return 0;
-// }
+#endif

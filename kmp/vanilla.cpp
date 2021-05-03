@@ -42,7 +42,7 @@ void search(string text, string pattern) {
     int preprocess[pat_len];
 
     preprocessor(pattern, pat_len, preprocess);
-
+    
     int j = 0;
     for(int i = 0; i < text_len; ) {
         if(pattern[j] == text[i]) {
@@ -51,13 +51,15 @@ void search(string text, string pattern) {
         }
 
         if(j == pat_len) {
-            cout << "Pattern: " << pattern << " found at: " << i << '\n';
+            // cout << "Pattern: " << pattern << " found at: " << i << '\n';
             j = preprocess[j - 1];
         }
 
         else if (i < text_len && pattern[j] != text[i]) {
             if (j != 0) {
+                // cout << j << endl;
                 j = preprocess[j - 1];
+                // cout << j << endl;
             }
             else {
                 ++i;
