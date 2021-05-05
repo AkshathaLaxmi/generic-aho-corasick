@@ -2,6 +2,7 @@
 Generic implementation of Aho Corasick pattern matching algorithm.
 
 Time complexity - O((n + m)(1 + logm) + z), where
+    
     n - total number of elements in the input sequence string
     m - sum of length of patterns
     z - number of occurrences of pattern in sequence
