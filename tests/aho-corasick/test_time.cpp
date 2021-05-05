@@ -51,7 +51,7 @@ void test_run(int str_length)
 
 int main()
 {
-    vector<int> lengths = {10, 20, 30, 40, 50, 80, 100, 150, 200, 250, 300, 30, 400, 450, 500};
+    vector<int> lengths = {10, 20, 30, 40, 50, 80, 100, 150, 200, 250, 300, 350, 400, 450, 500};
     for (int l : lengths)
     {
         cout << "Test Run for input of length: " << l << endl;
