@@ -17,7 +17,7 @@ Time complexity - O((n + m)(1 + logm) + z), where
    - Create an object of the type AhoCorasick, specifying the type of container for the input sequence and the type of individual items in that container.
        - These types will also correspond to the individual patterns.
    - Call the function MatchPattern on the created object with the vector containing patterns.
-   - The function will return a `map` with the key as the position at which pattern was found in the sequence and the value as a list of patterns that were found at the respective index.
+   - The function will return a `map` with the key as the position at which pattern was found in the sequence and the value as a vector of patterns that were found at the respective index.
 
 ### Performance
    Implemented a generic KMP algorithm (Time Complexity - O(n*k + m) where k is total number of pattern strings) to notice the optimizations provided by Aho-Corasick algorithm.
