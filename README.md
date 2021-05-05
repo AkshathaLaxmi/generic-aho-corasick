@@ -13,7 +13,7 @@ Time complexity - O((n + m)(1 + logm) + z), where
    4. Execute `./a.out`
 
 ### How to call the Aho-Corasick pattern match function?
-   - Create an object specifying the type of container for the input sequence and the type of individual items in that container.
+   - Create an object of the type AhoCorasick, specifying the type of container for the input sequence and the type of individual items in that container.
        - These types will also correspond to the individual patterns.
    - Call the function MatchPattern on the created object with the vector containing patterns.
    - The function will return a `map` with the key as the position at which pattern was found in the sequence and the value as a list of patterns that were found at the respective index.
