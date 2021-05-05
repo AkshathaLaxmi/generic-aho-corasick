@@ -20,6 +20,7 @@ Time complexity - O((n + m)(1 + logm) + z), where
 
 ### Performance
    Implemented a generic KMP algorithm (Time Complexity - O(n*k + m) where k is total number of pattern strings) to notice the optimizations provided by Aho-Corasick algorithm.
+   
    ![Aho-Corasick and KMP](https://user-images.githubusercontent.com/47936078/117105845-7b4bca00-ad9c-11eb-97af-42cf45d04d32.png)
    
    Generic Aho-Corasick performs better than generic KMP.
