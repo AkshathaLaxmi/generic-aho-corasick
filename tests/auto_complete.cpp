@@ -3,13 +3,21 @@
 
 int main()
 {
-    string text = "hel";
-    vector<string> patterns = {"hello", "dog", "hell", "cat", "a", "hel", "help", "helps", "helping"};
+    vector<string> patterns = {"hello", "dog", "hell", "cat", "a", "hel", "help", "helps", "helping", "sand", "sar", "sauce", "side", "sign", "silly", "sinus", "singh", "sit", "soap", "soda", "solo", "son"};
     AhoCorasick<string, char> search = AhoCorasick<string, char>(patterns);
-    vector<string> result = search.AutoComplete(text);
-    for (string r : result)
+
+    while (1)
     {
-        cout << r << endl;
+        cout << "Enter word: ";
+        string text;
+        cin >> text;
+        vector<string> result = search.AutoComplete(text);
+        cout << "Auto complete suggestions:" << endl;
+        for (string r : result)
+        {
+            cout << r << endl;
+        }
+        cout << endl;
     }
     return 0;
 }
