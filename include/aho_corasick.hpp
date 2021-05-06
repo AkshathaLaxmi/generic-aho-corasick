@@ -157,8 +157,6 @@ AhoCorasick<T, V>::AhoCorasick(vector<T> patterns)
     this->BuildTrie();
 }
 
-#endif
-
 template <typename T, typename V>
 vector<T> AhoCorasick<T, V>::AutoComplete(T &sequence)
 {
@@ -197,3 +195,5 @@ vector<T> AhoCorasick<T, V>::AutoComplete(T &sequence)
 
     return result;
 }
+
+#endif
