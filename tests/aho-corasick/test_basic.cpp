@@ -5,7 +5,7 @@ using namespace std;
 
 int main()
 {
-    string text = "gcatcg";
+    string text = "gcatcat";
     vector<string> patterns = {"acc", "atc", "cat", "gcg", "ca"};
     AhoCorasick<string, char> search = AhoCorasick<string, char>(patterns);
     map<string::iterator, vector<string>> result = search.MatchPattern(text);

@@ -5,6 +5,7 @@
 #include <iostream>
 #include <vector>
 #include <map>
+#include <stack>
 
 template <typename T, typename V>
 class AhoCorasick
@@ -18,6 +19,7 @@ class AhoCorasick
 
 public:
     map<typename T::iterator, vector<T>> MatchPattern(T &sequence);
+    vector<T> AutoComplete(T &sequence);
     AhoCorasick(vector<T> patterns);
 };
 
@@ -156,3 +158,42 @@ AhoCorasick<T, V>::AhoCorasick(vector<T> patterns)
 }
 
 #endif
+
+template <typename T, typename V>
+vector<T> AhoCorasick<T, V>::AutoComplete(T &sequence)
+{
+    stack<int> indexStack;
+    vector<T> result;
+    int currentNode = 0;
+    bool isMatched = true;
+    for (V value : sequence)
+    {
+        if (this->trie[currentNode].next.find(value) == this->trie[currentNode].next.end())
+        {
+            isMatched = false;
+            break;
+        }
+        currentNode = this->trie[currentNode].next[value];
+    }
+
+    if (!isMatched)
+        return result;
+
+    indexStack.push(currentNode);
+
+    while (!indexStack.empty())
+    {
+        int poppedIndex = indexStack.top();
+        indexStack.pop();
+        if (this->trie[poppedIndex].patternIndex >= 0)
+        {
+            result.push_back(this->patterns[this->trie[poppedIndex].patternIndex]);
+        }
+        for (auto mapItem : this->trie[poppedIndex].next)
+        {
+            indexStack.push(mapItem.second);
+        }
+    }
+
+    return result;
+}
